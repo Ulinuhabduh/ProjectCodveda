@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7fc;
+            color: #333;
+        }
+        .container {
+            max-width: 70%;
+            margin: auto;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #0080ff;
+            text-align: center;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; 
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .input-field {
+            width: 100%; 
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #BDC3C7;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .task-section {
+            display: flex;              /* Menggunakan Flexbox */
+            justify-content: space-between;  /* Memberi jarak antara dua div */
+            align-items: center;    /* Menjaga agar kedua div sejajar di atas */
+            gap: 50px;                  /* Jarak antar div */
+        }
+
+        .task-section > div {
+            flex: 1;                    /* Membuat kedua div memiliki ukuran yang sama */
+        }
+
+        .task {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .task-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;  /* Memberikan jarak antar tombol Edit dan Delete */
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background-color: #3498DB;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #2980B9;
+            transform: scale(1.05);
+        }
+
+        /* Div kedua (task list) dengan scroll */
+        .task-list {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            max-height: 70vh;  
+            overflow-y: auto;  
+            flex: 1;  
+        }
+
+        .task h3 {
+            margin: 0;
+            font-size: 1.2em;
+            color: #2C3E50;
+        }
+        .task-status {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #27AE60; /* Green for status */
+        }
+        .task-deadline {
+            font-size: 1em;
+            font-weight: bold;
+            color: #F39C12; /* Yellow for deadline */
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 768px) {
+            .task {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .task-actions {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Welcome, {{ user.username }}!</h1>
+    <hr>
+
+    <div class="task-section">
+    
+        <div>
+            <h2 style="color: #19c661;">Insert New Task</h2>
+            <form method="POST" style="margin-bottom: 20px;" class="form-container">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn">Add Task</button>
+            </form>
+        </div>
+
+        <div class="task-list">
+            <h2 style="color: #333;">Your Tasks</h2>
+            {% for task in tasks %}
+            <div class="task">
+                <div>
+                    <h3>{{ task.title }}</h3>
+                    <p>{{ task.description }}</p>
+                    <p class="task-status">{{ task.get_status_display }}</p>
+                    <p class="task-deadline">Deadline: {{ task.deadline|date:"F j, Y" }}</p>
+                </div>
+                <div class="task-actions">
+                    <a href="{% url 'edit_task' task.id %}" class="btn">Edit</a>
+                    <a href="{% url 'delete_task' task.id %}" class="btn" style="background-color: #E74C3C;">Delete</a>
+                </div>
+            </div>
+            {% empty %}
+            <p style="text-align: center;">No tasks found</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div style="text-align: right;">
+        <a href="/logout" class="btn">Logout</a>
+    </div>
+    
+</div>
+
+</body>
+</html>

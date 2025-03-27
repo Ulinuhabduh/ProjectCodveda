@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - TaskMaster</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f3f7;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Register Box Styles */
+        .register-box {
+            background-color: #ffffff;
+            padding: 40px 50px;
+            border-radius: 8px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+
+        .register-box h2 {
+            font-family: 'Roboto', sans-serif;
+            color: #2C3E50;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        /* Input Fields */
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border: 1px solid #BDC3C7;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: #3498DB;
+            outline: none;
+        }
+
+        .password-field {
+            margin-bottom: 20px;
+        }
+
+        /* Signup Button */
+        .signup-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #3498DB;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .signup-btn:hover {
+            background-color: #2980B9;
+            transform: translateY(-3px);
+        }
+
+        .signup-btn:active {
+            background-color: #1F6FB2;
+            transform: translateY(1px);
+        }
+
+        /* Login Link */
+        .login-link {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #3498DB;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .register-box {
+                padding: 30px 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="register-box">
+    <h2>Create Account</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            {{ form.username }}  <!-- Username field -->
+        </div>
+        <div>
+            {{ form.email }}  <!-- Username field -->
+        </div>
+        <div>
+            <input type="password" id="password1" class="input-field" name="password1" placeholder="Password">
+            <div id="password-strength-status"></div> <!-- Indikator kekuatan password -->
+        </div>
+        <div>
+            <input type="password" id="password2" class="input-field" name="password2" placeholder="Confirm Password">
+        </div>
+    
+        <button type="submit" class="signup-btn">Sign Up</button>
+    </form>
+    <div class="login-link">
+        <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+    </div>
+</div>
+
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const password1 = document.getElementById("password1");
+        const password2 = document.getElementById("password2");
+        const passwordStrengthIndicator = document.getElementById("password-strength-status");
+
+        // Fungsi untuk memverifikasi kekuatan password
+        function checkPasswordStrength(password) {
+            const strength = {
+                1: "Weak",
+                2: "Fair",
+                3: "Good",
+                4: "Strong"
+            };
+            
+            let score = 0;
+            // Cek panjang password
+            if (password.length > 8) score++;
+            if (/[a-z]/.test(password)) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^a-zA-Z0-9]/.test(password)) score++;
+
+            // Tentukan tingkat kekuatan password
+            passwordStrengthIndicator.textContent = strength[score] || "Too short";
+            passwordStrengthIndicator.style.color = score === 4 ? "green" :
+                                                     score === 3 ? "blue" :
+                                                     score === 2 ? "orange" :
+                                                     score === 1 ? "red" : "grey";
+        }
+
+        // Event listener untuk mengecek password saat diketik
+        password1.addEventListener("input", function () {
+            // Menyalin nilai password1 ke password2
+            password2.value = password1.value;
+
+            checkPasswordStrength(password1.value);
+        });
+
+        // Cek kesamaan password
+        password2.addEventListener("input", function () {
+            if (password1.value !== password2.value) {
+                password2.setCustomValidity("Passwords don't match");
+            } else {
+                password2.setCustomValidity("");
+            }
+        });
+    });
+</script>
+
+</html>
